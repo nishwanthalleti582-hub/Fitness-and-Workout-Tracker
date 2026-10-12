@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness and Workout Tracker</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f0f5f2;
+            color: #20352c;
+        }
+
+        header {
+            background: #123b32;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        header h1 {
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #c6eadb;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px #0000000d;
+        }
+
+        .card h3 {
+            color: #17865d;
+            margin-bottom: 12px;
+        }
+
+        .number {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 22px;
+            border-radius: 12px;
+        }
+
+        .section h2 {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin: 12px 0 6px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd9d1;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        button {
+            border: none;
+            padding: 12px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .add-btn {
+            background: #159968;
+            color: white;
+            width: 100%;
+        }
+
+        .add-btn:hover {
+            background: #10764f;
+        }
+
+        .workout {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #e3ebe6;
+            padding: 15px 0;
+        }
+
+        .workout p {
+            margin-top: 5px;
+            color: #64766d;
+            font-size: 14px;
+        }
+
+        .delete-btn {
+            background: #ffe8e5;
+            color: #b72e26;
+            margin-top: 0;
+        }
+
+        .progress {
+            background: #e1eae5;
+            height: 14px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-bar {
+            background: #159968;
+            height: 100%;
+            width: 0;
+            transition: width 0.3s;
+        }
+
+        .goal-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .goal-controls input {
+            max-width: 150px;
+        }
+
+        .goal-controls button {
+            background: #dff5e9;
+            color: #087448;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64766d;
+        }
+
+        @media (max-width: 650px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 12px;
+            }
+
+            .workout {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>💪 FitTrack</h1>
+    <p>Your Personal Fitness and Workout Tracker</p>
+</header>
+
+<div class="container">
+
+    <div class="dashboard">
+        <div class="card">
+            <h3>Total Workouts</h3>
+            <div class="number" id="totalWorkouts">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Total Minutes</h3>
+            <div class="number" id="totalMinutes">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Estimated Calories</h3>
+            <div class="number" id="totalCalories">0</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>➕ Add a Workout</h2>
+
+        <form id="workoutForm">
+            <label for="exercise">Exercise Type</label>
+            <select id="exercise" required>
+                <option value="Walking">Walking</option>
+                <option value="Running">Running</option>
+                <option value="Cycling">Cycling</option>
+                <option value="Gym Workout">Gym Workout</option>
+                <option value="Yoga">Yoga</option>
+                <option value="Swimming">Swimming</option>
+            </select>
+
+            <label for="duration">Duration (minutes)</label>
+            <input
+                type="number"
+                id="duration"
+                min="1"
+                max="600"
+                placeholder="Enter duration"
+                required
+            >
+
+            <label for="workoutDate">Workout Date</label>
+            <input type="date" id="workoutDate" required>
+
+            <button class="add-btn" type="submit">
+                Save Workout
+            </button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Daily Workout Goal</h2>
+
+        <p>
+            Today's workout:
+            <strong><span id="todayMinutes">0</span> minutes</strong>
+        </p>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <p id="goalMessage" style="margin-top: 10px;">
+            Keep moving towards your goal!
+        </p>
+
+        <label for="goalInput">Set Daily Goal (minutes)</label>
+
+        <div class="goal-controls">
+            <input type="number" id="goalInput" min="1" max="600" value="30">
+            <button type="button" id="updateGoal">Update Goal</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📋 Workout History</h2>
+        <div id="workoutList">
+            <p>No workouts recorded yet.</p>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p>Fitness and Workout Tracker | Application Development Project</p>
+</footer>
+
+<script>
+    const form = document.getElementById("workoutForm");
+    const workoutList = document.getElementById("workoutList");
+
+    const today = new Date();
+    const todayKey = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, "0"),
+        String(today.getDate()).padStart(2, "0")
+    ].join("-");
+
+    document.getElementById("workoutDate").value = todayKey;
+
+    let workouts = JSON.parse(
+        localStorage.getItem("workouts") || "[]"
+    );
+
+    let dailyGoal = Number(
+        localStorage.getItem("dailyGoal") || 30
+    );
+
+    document.getElementById("goalInput").value = dailyGoal;
+
+    function escapeHTML(value) {
+        return String(value).replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
+    }
+
+    function estimateCalories(workout) {
+        const rates = {
+            "Walking": 4,
+            "Running": 10,
+            "Cycling": 7,
+            "Gym Workout": 6,
+            "Yoga": 3,
+            "Swimming": 8
+        };
+
+        // Approximate estimate; actual calories vary by person.
+        return Math.round(
+            workout.duration * (rates[workout.exercise] || 4)
+        );
+    }
+
+    function saveData() {
+        localStorage.setItem(
+            "workouts",
+            JSON.stringify(workouts)
+        );
+
+        localStorage.setItem("dailyGoal", dailyGoal);
+    }
+
+    function renderDashboard() {
+        const totalMinutes = workouts.reduce(
+            (sum, workout) => sum + workout.duration, 0
+        );
+
+        const totalCalories = workouts.reduce(
+            (sum, workout) => sum + estimateCalories(workout), 0
+        );
+
+        const todayMinutes = workouts
+            .filter(workout => workout.date === todayKey)
+            .reduce((sum, workout) => sum + workout.duration, 0);
+
+        document.getElementById("totalWorkouts").textContent =
+            workouts.length;
+
+        document.getElementById("totalMinutes").textContent =
+            totalMinutes;
+
+        document.getElementById("totalCalories").textContent =
+            totalCalories;
+
+        document.getElementById("todayMinutes").textContent =
+            todayMinutes;
+
+        const percentage = Math.min(
+            100,
+            Math.round((todayMinutes / dailyGoal) * 100)
+        );
+
+        document.getElementById("progressBar").style.width =
+            percentage + "%";
+
+        document.getElementById("goalMessage").textContent =
+            percentage >= 100
+                ? "Congratulations! Daily goal completed! 🎉"
+                : `${Math.max(0, dailyGoal - todayMinutes)} minutes left to reach your goal.`;
+
+        workoutList.innerHTML = "";
+
+        if (workouts.length === 0) {
+            workoutList.innerHTML =
+                "<p>No workouts recorded yet. Add your first workout!</p>";
+            return;
+        }
+
+        [...workouts].reverse().forEach(workout => {
+            const item = document.createElement("div");
+            item.className = "workout";
+
+            item.innerHTML = `
+                <div>
+                    <strong>${escapeHTML(workout.exercise)}</strong>
+                    <p>${escapeHTML(workout.date)} ·
+                    ${workout.duration} minutes ·
+                    Approximately ${estimateCalories(workout)} kcal</p>
+                </div>
+                <button class="delete-btn" type="button"
+                    data-id="${escapeHTML(workout.id)}">
+                    Delete
+                </button>
+            `;
+
+            workoutList.appendChild(item);
+        });
+    }
+
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const exercise =
+            document.getElementById("exercise").value;
+
+        const duration =
+            Number(document.getElementById("duration").value);
+
+        const date =
+            document.getElementById("workoutDate").value;
+
+        if (!Number.isFinite(duration) ||
+            duration < 1 || duration > 600 || !date) {
+            alert("Please enter a valid workout duration and date.");
+            return;
+        }
+
+        workouts.push({
+            id: Date.now().toString() +
+                Math.random().toString(16).slice(2),
+            exercise: exercise,
+            duration: duration,
+            date: date
+        });
+
+        saveData();
+        form.reset();
+        document.getElementById("workoutDate").value = todayKey;
+        renderDashboard();
+    });
+
+    workoutList.addEventListener("click", function(event) {
+        const button = event.target.closest("[data-id]");
+
+        if (!button) return;
+
+        workouts = workouts.filter(
+            workout => workout.id !== button.dataset.id
+        );
+
+        saveData();
+        renderDashboard();
+    });
+
+    document.getElementById("updateGoal")
+        .addEventListener("click", function() {
+            const value = Number(
+                document.getElementById("goalInput").value
+            );
+
+            if (!Number.isFinite(value) ||
+                value < 1 || value > 600) {
+                alert("Enter a daily goal between 1 and 600 minutes.");
+                return;
+            }
+
+            dailyGoal = value;
+            saveData();
+            renderDashboard();
+        });
+
+    renderDashboard();
+</script>
+
+</body>
+</html>
